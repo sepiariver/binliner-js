@@ -10,6 +10,17 @@ Requires @babel/core 7+
 npm install @sepiariver/binliner-js
 ```
 
+## Usage
+
+See [test/examples.spec.js](test/examples.spec.js) for usage examples.
+
+### What is a binary sequence?
+
+It is a series of bits, each of which has a value of either 0 or 1. It is typically used for data transmission, compression or storage, but also can be used for error detection and correction, among other uses. By encapsulating arbitrary boolean conditions, Binliner can faciliate complex control flows in a more compact yet still transparent way.
+
+### Binliner is not
+
+Binliner is not a garbage-collection utility, despite the name. Since it validates a binary sequence against configured rules, it can be said to catch errors aka "garbage".
 
 ## Testing
 

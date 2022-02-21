@@ -3,6 +3,7 @@ import Binliner from "../dist";
 describe("Binliner", () => {
   it('handles verbose control flows transparently', () => {
     const doThing = (thing) => console.log(String(thing));
+
     const verboseFlow = (first, second, third, fourth) => {
       let valid;
       if (!first) {
@@ -39,19 +40,19 @@ describe("Binliner", () => {
         };
       }
     };
+
     const binLinerFlow = (first, second, third, fourth) => {
       let valid;
-      const bin = new Binliner({
-        size: 4,
-        validation: [8, 9, 14, 15]
-      }, first, second, third, fourth); // Represent conditions as binary stream: 1000, 1001, etc.
+      const bin = new Binliner({ // Represent conditions as binary stream: 1000, 1001, etc.
+        validation: [8, 9, 14, 15] // Arbitrary validation rules
+      }, first, second, third, fourth);
       if (!bin.isValid()) {
         valid = false; // capture all invalid cases
         return valid;
       }
       if (Number(bin) > 10) { // 1110: 14, 1111: 15
         doThing('second and third are both true, continue');
-      } else { // 1000: 8, 1001: 9
+      } else {                // 1000: 8, 1001: 9
         doThing('second and third are both false, continue');
       }
       if (bin.get(3) === 0) { // 1000: 8, 1110: 14
@@ -60,7 +61,7 @@ describe("Binliner", () => {
           valid,
           foo: 'baz'
         };
-      } else { // 1001: 9, 1111: 15
+      } else {                // 1001: 9, 1111: 15
         doThing('fourth is true, return foo = bar');
         return {
           valid,
@@ -68,6 +69,17 @@ describe("Binliner", () => {
         };
       }
     }
+
+    /**
+     * Truth table:
+     * first | second | third | fourth | valid | foo
+     * 1  | 0   | 0  | 0   | true  | baz
+     * 1  | 0   | 0  | 1   | true  | bar
+     * 1  | 1   | 1  | 0   | true  | baz
+     * 1  | 1   | 1  | 1   | true  | bar
+     * 
+     * Any other conditions are invalid.
+     */
     expect(verboseFlow(false, true, true, true)).toBeFalsy();
     expect(verboseFlow(true, true, false, true)).toBeFalsy();
     expect(verboseFlow(true, false, true, true)).toBeFalsy();
