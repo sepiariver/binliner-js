@@ -1,11 +1,17 @@
 import Binliner from "../dist";
+import equal from 'fast-deep-equal';
 
 describe("Binliner", () => {
   it('handles verbose control flows transparently', () => {
-    const doThing = (thing) => console.log(String(thing));
+    const messages = {
+      'verbose': [],
+      'binliner': [],
+    }
+    const doThing = (ns, thing) => messages[ns].push(String(thing));
 
     const verboseFlow = (first, second, third, fourth) => {
       let valid;
+      let ns = 'verbose';
       if (!first) {
         valid = false; // first is required
         return valid;
@@ -20,20 +26,20 @@ describe("Binliner", () => {
       }
       if (second && third) {
         valid = true;
-        doThing('second and third are both true, continue');
+        doThing(ns, 'second and third are both true, continue');
       }
       if (!second && !third) {
         valid = true;
-        doThing('second and third are both false, continue');
+        doThing(ns, 'second and third are both false, continue');
       }
       if (fourth) {
-        doThing('fourth is true, return foo = bar');
+        doThing(ns, 'fourth is true, return foo = bar');
         return {
           valid,
           foo: 'bar'
         };
       } else {
-        doThing('fourth is false, return foo = baz');
+        doThing(ns, 'fourth is false, return foo = baz');
         return {
           valid,
           foo: 'baz'
@@ -43,6 +49,7 @@ describe("Binliner", () => {
 
     const binLinerFlow = (first, second, third, fourth) => {
       let valid;
+      let ns = 'binliner';
       const bin = new Binliner({ // Represent conditions as binary stream: 1000, 1001, etc.
         validation: [8, 9, 14, 15] // Arbitrary validation rules
       }, first, second, third, fourth);
@@ -51,18 +58,18 @@ describe("Binliner", () => {
         return valid;
       }
       if (Number(bin) > 10) { // 1110: 14, 1111: 15
-        doThing('second and third are both true, continue');
+        doThing(ns, 'second and third are both true, continue');
       } else {                // 1000: 8, 1001: 9
-        doThing('second and third are both false, continue');
+        doThing(ns, 'second and third are both false, continue');
       }
       if (bin.get(3) === 0) { // 1000: 8, 1110: 14
-        doThing('fourth is false, return foo = baz');
+        doThing(ns, 'fourth is false, return foo = baz');
         return {
           valid,
           foo: 'baz'
         };
       } else {                // 1001: 9, 1111: 15
-        doThing('fourth is true, return foo = bar');
+        doThing(ns, 'fourth is true, return foo = bar');
         return {
           valid,
           foo: 'bar'
@@ -91,5 +98,6 @@ describe("Binliner", () => {
     expect(binLinerFlow(true, false, true, true)).toBeFalsy();
     expect(binLinerFlow(true, true, true, true)).toBeTruthy();
     expect(binLinerFlow(true, false, false, false)).toBeTruthy();
+    expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
   });
 });
