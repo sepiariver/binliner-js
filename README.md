@@ -6,7 +6,7 @@ Requires @babel/core 7+
 
 ## Installation
 
-```
+```cli
 npm install @sepiariver/binliner-js
 ```
 
