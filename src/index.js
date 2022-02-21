@@ -1,74 +1,79 @@
-class Binliner {
-  constructor(config, ...args) {
-    if (config == null) {
-      config = {};
-    }
-    // Size
-    let size = args.length;
-    if (typeof config.size === 'number') {
-      size = config.size;
-    }
-    this.size = Math.abs(parseInt(size, 10));
-    // Value
-    this.value = '';
-    args.forEach((arg) => {
-      this.value += !!(arg) ? '1' : '0';
-    });
-    this.value = this.value.padEnd(this.size, '0'); // Initialize with zeros
-    // Validator
-    if (typeof config.validation === 'undefined') {
-      this.validation = ''.padStart(this.size, '1'); // default all 1's
-    } else {
-      this.validation = config.validation;
-    }
+class Binliner extends Array {
+  constructor(...args) {
+    super(...args);
   }
+
   [Symbol.toPrimitive](hint) {
-    return this.juggle(this.value, hint);
+    return this.juggle(hint);
   }
-  juggle = (input, type) => {
-    switch (type) {
-      case 'string':
-        return String(input);
-      case 'number':
-        return parseInt(input, 2);
-      default:
-        return String(input);
+
+  toString() {
+    let str = "";
+    for (let i = 0; i < this.length; i++) {
+      str += !Boolean(this[i]) || this[i] === "0" ? "0" : "1";
     }
+    return str;
   }
+
+  toNumber() {
+    return parseInt(this.toString(), 2);
+  }
+
+  juggle = (type) => {
+    if (type === "number") {
+      return this.toNumber();
+    }
+    return this.toString();
+  };
+
   set = (pos, value) => {
-    pos = Math.abs(pos);
-    if (pos > (this.size - 1)) {
-      throw `Illegal position: ${pos}`;
-    }
-    const sequence = this.value.split('');
-    sequence[pos] = !!(value) ? '1' : '0'
-    this.value = sequence.join('');
+    this[pos] = Boolean(value);
     return this;
-  }
-  get = (pos, type = 'number') => {
-    pos = Math.abs(pos);
-    if (pos > (this.size - 1)) {
-      throw `Illegal position: ${pos}`;
+  };
+
+  get = (pos) => {
+    return Boolean(this[pos]);
+  };
+
+  setValidation = (validation) => {
+    if (
+      Array.isArray(validation) &&
+      validation.some((v) => !["string", "number"].includes(typeof v))
+    ) {
+      throw new Error("Array validation must contain only strings or numbers.");
+    } else if (
+      !Array.isArray(validation) &&
+      !["string", "number", "function"].includes(typeof validation)
+    ) {
+      throw new Error(
+        "Invalid validation type in config: must be a function, string, number, or array."
+      );
     }
-    return this.juggle(this.value[pos], type);
-  }
-  isValid = (input = undefined) => {
-    if (typeof input === 'undefined') {
-      input = this;
+    this.validation = validation;
+  };
+
+  isValid = () => {
+    if (typeof this.validation === "function") {
+      return Boolean(this.validation(this));
     }
-    if (typeof this.validation === 'function') {
-      return !!(this.validation(input));
-    }
+
     if (Array.isArray(this.validation)) {
       return this.validation.some((validValue) => {
-        return !!(this.juggle(input, typeof validValue) === validValue);
-      })
+        const coerced = this.juggle(typeof validValue);
+        return coerced === validValue;
+      });
     }
-    if (typeof this.validation === 'string' || typeof this.validation === 'number') {
-      return !!(this.juggle(input, typeof this.validation) === this.validation);
+
+    if (
+      typeof this.validation === "string" ||
+      typeof this.validation === "number"
+    ) {
+      // Direct comparison for single validation rule
+      return this.juggle(typeof this.validation) === this.validation;
     }
+
     return false;
-  }
+  };
 }
 
 module.exports = Binliner;
