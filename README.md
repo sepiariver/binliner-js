@@ -14,6 +14,8 @@ npm install @sepiariver/binliner-js
 
 See [test/examples.spec.js](test/examples.spec.js) for usage examples.
 
+More documentation to come.
+
 ### What is a binary sequence?
 
 It is a series of bits, each of which has a value of either 0 or 1. It is typically used for data transmission, compression or storage, but also can be used for error detection and correction, among other uses. By encapsulating arbitrary boolean conditions using the implicit ordering of numerically-indexed Arrays, Binliner can faciliate complex control flows in a more compact yet still transparent/readable way.
@@ -22,7 +24,7 @@ For trivial control flows, Binliner is probably ill-suited, but it can be helpfu
 
 ### Binliner is not
 
-Binliner is not a garbage-collection utility, despite the name. Since it validates a binary sequence against configured rules, it can be said to catch errors aka "garbage".
+Binliner is not a garbage-collection utility, despite the name. Since it validates a binary sequence against configured rules, it can be said to catch errors aka "catch garbage" like a binliner :)
 
 ## Testing
 
@@ -32,4 +34,4 @@ Binliner is not a garbage-collection utility, despite the name. Since it validat
 
 ## Contributing
 
-Submit pull requests to [https://github.com/sepiariver/binliner/pulls]
+Submit pull requests to [https://github.com/sepiariver/binliner-js/pulls]

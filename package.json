@@ -1,6 +1,6 @@
 {
   "name": "@sepiariver/binliner-js",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "Binary sequence validator for JavaScript",
   "main": "index.js",
   "scripts": {
@@ -9,21 +9,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sepiariver/binliner.git"
+    "url": "git+https://github.com/sepiariver/binliner-js.git"
   },
   "keywords": [
     "binary",
     "sequence",
     "tree",
     "heap",
-    "validator"
+    "validator",
+    "conditional logic"
   ],
   "author": "sepiariver",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sepiariver/binliner/issues"
+    "url": "https://github.com/sepiariver/binliner-js/issues"
   },
-  "homepage": "https://github.com/sepiariver/binliner#readme",
+  "homepage": "https://github.com/sepiariver/binliner-js#readme",
   "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.17.0",

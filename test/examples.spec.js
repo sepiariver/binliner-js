@@ -65,13 +65,13 @@ describe("Binliner", () => {
       if (bin.get(3) === 0) { // 1000: 8, 1110: 14
         doThing(ns, 'fourth is false, return foo = baz');
         return {
-          valid,
+          valid: true,
           foo: 'baz'
         };
       } else {                // 1001: 9, 1111: 15
         doThing(ns, 'fourth is true, return foo = bar');
         return {
-          valid,
+          valid: true,
           foo: 'bar'
         };
       }
@@ -87,17 +87,45 @@ describe("Binliner", () => {
      * 
      * Any other conditions are invalid.
      */
-    expect(verboseFlow(false, true, true, true)).toBeFalsy();
-    expect(verboseFlow(true, true, false, true)).toBeFalsy();
-    expect(verboseFlow(true, false, true, true)).toBeFalsy();
-    expect(verboseFlow(true, true, true, true)).toBeTruthy();
-    expect(verboseFlow(true, false, false, false)).toBeTruthy();
-
-    expect(binLinerFlow(false, true, true, true)).toBeFalsy();
-    expect(binLinerFlow(true, true, false, true)).toBeFalsy();
-    expect(binLinerFlow(true, false, true, true)).toBeFalsy();
-    expect(binLinerFlow(true, true, true, true)).toBeTruthy();
-    expect(binLinerFlow(true, false, false, false)).toBeTruthy();
+    let verbose = verboseFlow(false, true, true, true)
+    let binliner = binLinerFlow(false, true, true, true);
+    expect(verbose).toBeFalsy();
+    expect(binliner).toBeFalsy();
+    expect(equal(verbose, binliner)).toBeTruthy();
     expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
+    messages['verbose'] = [];
+    messages['binliner'] = [];
+    verbose = verboseFlow(true, true, false, true)
+    binliner = binLinerFlow(true, true, false, true);
+    expect(verbose).toBeFalsy();
+    expect(binliner).toBeFalsy();
+    expect(equal(verbose, binliner)).toBeTruthy();
+    expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
+    messages['verbose'] = [];
+    messages['binliner'] = [];
+    verbose = verboseFlow(true, false, true, true)
+    binliner = binLinerFlow(true, false, true, true);
+    expect(verbose).toBeFalsy();
+    expect(binliner).toBeFalsy();
+    expect(equal(verbose, binliner)).toBeTruthy();
+    expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
+    messages['verbose'] = [];
+    messages['binliner'] = [];
+    verbose = verboseFlow(true, true, true, true);
+    binliner = binLinerFlow(true, true, true, true);
+    expect(verbose).toBeTruthy();
+    expect(binliner).toBeTruthy();
+    expect(equal(verbose, binliner)).toBeTruthy();
+    expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
+    messages['verbose'] = [];
+    messages['binliner'] = [];
+    verbose = verboseFlow(true, false, false, false);
+    binliner = binLinerFlow(true, false, false, false);
+    expect(verbose).toBeTruthy();
+    expect(binliner).toBeTruthy();
+    expect(equal(verbose, binliner)).toBeTruthy();
+    expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
+    messages['verbose'] = [];
+    messages['binliner'] = [];
   });
 });
