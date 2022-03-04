@@ -16,7 +16,7 @@ By passing a function to `config.validation`, Binliner's deterministic behaviour
 
 ### What it is not
 
-Binliner is not a garbage-collection utility, despite the name. Since it validates a binary sequence against configured rules, it can be said to catch errors aka "catch garbage" like a binliner :)
+Binliner is not a garbage-collection utility, despite the name. It "lines up" binary flags in a squence, and since it validates the sequence against configured rules, it can be said to catch errors aka "catch garbage" like a binliner :)
 
 ### What is a binary sequence?
 
@@ -35,6 +35,8 @@ npm install @sepiariver/binliner-js
 ### Example
 
 > If Bob's age is less than 21, reject. If his age is 21 to 65, check his license, and reject if invalid. If he is over 65 and has a valid license, re-test. If he fails the test, or lacks a valid license, reject.
+
+Note: this example is not intended to condone ageism
 
 ```js
 import Binliner from 'binliner-js';
