@@ -53,8 +53,8 @@ describe("Binliner", () => {
       const bin = new Binliner({ // Represent conditions as binary stream: 1000, 1001, etc.
         validation: [8, 9, 14, 15] // Arbitrary validation rules
       }, first, second, third, fourth);
-      if (!bin.isValid()) {
-        valid = false; // capture all invalid cases
+      valid = bin.isValid();
+      if (!valid) { // capture all invalid cases
         return valid;
       }
       if (Number(bin) > 10) { // 1110: 14, 1111: 15
@@ -65,13 +65,13 @@ describe("Binliner", () => {
       if (bin.get(3) === 0) { // 1000: 8, 1110: 14
         doThing(ns, 'fourth is false, return foo = baz');
         return {
-          valid: true,
+          valid,
           foo: 'baz'
         };
       } else {                // 1001: 9, 1111: 15
         doThing(ns, 'fourth is true, return foo = bar');
         return {
-          valid: true,
+          valid,
           foo: 'bar'
         };
       }
@@ -87,7 +87,7 @@ describe("Binliner", () => {
      * 
      * Any other conditions are invalid.
      */
-    let verbose = verboseFlow(false, true, true, true)
+    let verbose = verboseFlow(false, true, true, true);
     let binliner = binLinerFlow(false, true, true, true);
     expect(verbose).toBeFalsy();
     expect(binliner).toBeFalsy();
@@ -95,7 +95,7 @@ describe("Binliner", () => {
     expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
     messages['verbose'] = [];
     messages['binliner'] = [];
-    verbose = verboseFlow(true, true, false, true)
+    verbose = verboseFlow(true, true, false, true);
     binliner = binLinerFlow(true, true, false, true);
     expect(verbose).toBeFalsy();
     expect(binliner).toBeFalsy();
@@ -103,7 +103,7 @@ describe("Binliner", () => {
     expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
     messages['verbose'] = [];
     messages['binliner'] = [];
-    verbose = verboseFlow(true, false, true, true)
+    verbose = verboseFlow(true, false, true, true);
     binliner = binLinerFlow(true, false, true, true);
     expect(verbose).toBeFalsy();
     expect(binliner).toBeFalsy();
@@ -113,16 +113,16 @@ describe("Binliner", () => {
     messages['binliner'] = [];
     verbose = verboseFlow(true, true, true, true);
     binliner = binLinerFlow(true, true, true, true);
-    expect(verbose).toBeTruthy();
-    expect(binliner).toBeTruthy();
+    expect(verbose.valid).toBeTruthy();
+    expect(binliner.valid).toBeTruthy();
     expect(equal(verbose, binliner)).toBeTruthy();
     expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
     messages['verbose'] = [];
     messages['binliner'] = [];
     verbose = verboseFlow(true, false, false, false);
     binliner = binLinerFlow(true, false, false, false);
-    expect(verbose).toBeTruthy();
-    expect(binliner).toBeTruthy();
+    expect(verbose.valid).toBeTruthy();
+    expect(binliner.valid).toBeTruthy();
     expect(equal(verbose, binliner)).toBeTruthy();
     expect(equal(messages['verbose'], messages['binliner'])).toBeTruthy();
     messages['verbose'] = [];
