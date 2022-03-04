@@ -97,11 +97,16 @@ var Binliner = /*#__PURE__*/function () {
       size = config.size;
     }
 
-    this.size = Math.abs(parseInt(size, 10)); // Value
+    this.size = Math.abs(parseInt(size, 10));
+
+    if (args.length > this.size) {
+      throw 'Too many arguments for size: ' + this.size;
+    } // Value
+
 
     this.value = '';
     args.forEach(function (arg) {
-      _this.value += !!arg ? '1' : '0';
+      _this.value += !arg ? '0' : '1';
     });
     this.value = this.value.padEnd(this.size, '0'); // Initialize with zeros
     // Validator
