@@ -1,3 +1,5 @@
+![node](https://github.com/sepiariver/binliner-js/actions/workflows/node.js.yml/badge.svg)
+
 # @sepiariver/binliner-js
 
 Binary sequence validator for JavaScript
