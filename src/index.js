@@ -26,11 +26,13 @@ class Binliner {
       );
     }
 
-    // Initialize value with binary representation of args expressed as strings
-    this.value = args
-      .map((arg) => (arg ? "1" : "0"))
-      .join("")
-      .padEnd(this.size, "0");
+    // Initialize value with binary representation of args
+    this.value = 0; // Start with 0
+    for (let index = 0; index < args.length; index++) {
+      if (args[index]) {
+        this.value |= 1 << (this.size - 1 - index); // Map left-to-right index to bit index
+      }
+    }
 
     // Validator
     if (typeof config.validation === "undefined") {
@@ -45,54 +47,61 @@ class Binliner {
   }
 
   juggle = (input, type) => {
-    switch (type) {
-      case "string":
-        return String(input);
-      case "number":
-        return parseInt(input, 2);
-      default:
-        return String(input);
+    if (type === "number") {
+      return input;
     }
+    return input.toString(2).padStart(this.size, "0");
   };
 
   set = (pos, value) => {
-    pos = Math.abs(pos);
-    if (pos > this.size - 1) {
+    if (pos < 0 || pos >= this.size) {
       throw new Error(`Illegal position: ${pos}`);
     }
-    const sequence = this.value.split("");
-    sequence[pos] = value ? "1" : "0";
-    this.value = sequence.join("");
+    const bitIndex = this.size - 1 - pos; // Map left-to-right position to bit index
+    if (value) {
+      this.value |= 1 << bitIndex;
+    } else {
+      this.value &= ~(1 << bitIndex);
+    }
     return this;
   };
 
   get = (pos, type = "number") => {
-    pos = Math.abs(pos);
-    if (pos > this.size - 1) {
+    if (pos < 0 || pos >= this.size) {
       throw new Error(`Illegal position: ${pos}`);
     }
-    return this.juggle(this.value[pos], type);
+    const bitIndex = this.size - 1 - pos;
+    const bitValue = (this.value >> bitIndex) & 1;
+
+    if (type === "string") {
+      return bitValue.toString();
+    }
+    return this.juggle(bitValue, type);
   };
 
   isValid = (input = undefined) => {
     if (typeof input === "undefined") {
-      input = this;
+      input = this.value; // Default to the internal integer representation
     }
     if (typeof this.validation === "function") {
       return Boolean(this.validation(input));
     }
     if (Array.isArray(this.validation)) {
-      return this.validation.some((validValue) =>
-        Boolean(this.juggle(input, typeof validValue) === validValue)
-      );
+      return this.validation.some((validValue) => {
+        if (typeof validValue === "number") {
+          // Compare integers directly
+          return input === validValue;
+        }
+        // Compare binary strings or other types
+        return this.juggle(input, typeof validValue) === validValue;
+      });
     }
     if (
       typeof this.validation === "string" ||
       typeof this.validation === "number"
     ) {
-      return Boolean(
-        this.juggle(input, typeof this.validation) === this.validation
-      );
+      // Direct comparison for single validation rule
+      return this.juggle(input, typeof this.validation) === this.validation;
     }
 
     return false;
