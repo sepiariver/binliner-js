@@ -117,6 +117,8 @@ var Binliner = function () {
 
     if (typeof config.validation === "undefined") {
       this.validation = "".padStart(this.size, "1");
+    } else if (typeof config.validation !== "function" && typeof config.validation !== "string" && typeof config.validation !== "number" && !Array.isArray(config.validation)) {
+      throw new Error("Invalid validation type in config: must be a function, string, number, or array.");
     } else {
       this.validation = config.validation;
     }

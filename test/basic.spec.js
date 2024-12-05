@@ -1,6 +1,13 @@
 import Binliner from "../dist";
 
 describe("Binliner", () => {
+  it("assigns default config when invalid config is provided", () => {
+    const bin = new Binliner(null, true, false); // Pass null as config
+    expect(bin.size).toBe(2);
+    expect(bin.validation).toBe("11");
+    expect(bin.juggle(bin.value)).toBe("10");
+  });
+
   it('does basic validation', () => {
     const bin = new Binliner({
       size: 2,
