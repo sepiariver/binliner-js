@@ -169,6 +169,8 @@ describe("Binliner", () => {
     const badInit = () => {
       bin = new Binliner(config, true, true, true);
     }
-    expect(badInit).toThrow('Too many arguments for size: 2');
+    expect(badInit).toThrow(
+      "Too many arguments provided (3) for the specified size (2)."
+    );
   });
 });

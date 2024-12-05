@@ -22,10 +22,10 @@ var Binliner = /*#__PURE__*/function () {
 
     _defineProperty(this, "juggle", function (input, type) {
       switch (type) {
-        case 'string':
+        case "string":
           return String(input);
 
-        case 'number':
+        case "number":
           return parseInt(input, 2);
 
         default:
@@ -37,22 +37,22 @@ var Binliner = /*#__PURE__*/function () {
       pos = Math.abs(pos);
 
       if (pos > _this.size - 1) {
-        throw "Illegal position: ".concat(pos);
+        throw new Error("Illegal position: ".concat(pos));
       }
 
-      var sequence = _this.value.split('');
+      var sequence = _this.value.split("");
 
-      sequence[pos] = !!value ? '1' : '0';
-      _this.value = sequence.join('');
+      sequence[pos] = value ? "1" : "0";
+      _this.value = sequence.join("");
       return _this;
     });
 
     _defineProperty(this, "get", function (pos) {
-      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'number';
+      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "number";
       pos = Math.abs(pos);
 
       if (pos > _this.size - 1) {
-        throw "Illegal position: ".concat(pos);
+        throw new Error("Illegal position: ".concat(pos));
       }
 
       return _this.juggle(_this.value[pos], type);
@@ -61,31 +61,30 @@ var Binliner = /*#__PURE__*/function () {
     _defineProperty(this, "isValid", function () {
       var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
 
-      if (typeof input === 'undefined') {
+      if (typeof input === "undefined") {
         input = _this;
       }
 
-      if (typeof _this.validation === 'function') {
-        return !!_this.validation(input);
+      if (typeof _this.validation === "function") {
+        return Boolean(_this.validation(input));
       }
 
       if (Array.isArray(_this.validation)) {
         return _this.validation.some(function (validValue) {
-          return !!(_this.juggle(input, _typeof(validValue)) === validValue);
+          return Boolean(_this.juggle(input, _typeof(validValue)) === validValue);
         });
       }
 
-      if (typeof _this.validation === 'string' || typeof _this.validation === 'number') {
-        return !!(_this.juggle(input, _typeof(_this.validation)) === _this.validation);
+      if (typeof _this.validation === "string" || typeof _this.validation === "number") {
+        return Boolean(_this.juggle(input, _typeof(_this.validation)) === _this.validation);
       }
 
       return false;
     });
 
-    if (config == null) {
+    if (!config || _typeof(config) !== "object" || config.constructor !== Object) {
       config = {};
-    } // Size
-
+    }
 
     for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
@@ -93,26 +92,25 @@ var Binliner = /*#__PURE__*/function () {
 
     var size = args.length;
 
-    if (typeof config.size === 'number') {
+    if (typeof config.size === "number" && Number.isInteger(config.size) && config.size > 0) {
       size = config.size;
+    } else if (config.size !== undefined) {
+      throw new Error("Invalid 'size' in config: must be a positive integer.");
     }
 
-    this.size = Math.abs(parseInt(size, 10));
+    this.size = size;
 
     if (args.length > this.size) {
-      throw 'Too many arguments for size: ' + this.size;
-    } // Value
+      throw new Error("Too many arguments provided (".concat(args.length, ") for the specified size (").concat(this.size, ")."));
+    } // Initialize value with binary representation of args expressed as strings
 
 
-    this.value = '';
-    args.forEach(function (arg) {
-      _this.value += !arg ? '0' : '1';
-    });
-    this.value = this.value.padEnd(this.size, '0'); // Initialize with zeros
-    // Validator
+    this.value = args.map(function (arg) {
+      return arg ? "1" : "0";
+    }).join("").padEnd(this.size, "0"); // Validator
 
-    if (typeof config.validation === 'undefined') {
-      this.validation = ''.padStart(this.size, '1'); // default all 1's
+    if (typeof config.validation === "undefined") {
+      this.validation = "".padStart(this.size, "1"); // default all 1's
     } else {
       this.validation = config.validation;
     }
