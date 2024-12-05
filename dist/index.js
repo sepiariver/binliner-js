@@ -14,7 +14,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 _Symbol$toPrimitive = Symbol.toPrimitive;
 
-var Binliner = /*#__PURE__*/function () {
+var Binliner = function () {
   function Binliner(config) {
     var _this = this;
 
@@ -33,7 +33,7 @@ var Binliner = /*#__PURE__*/function () {
         throw new Error("Illegal position: ".concat(pos));
       }
 
-      var bitIndex = _this.size - 1 - pos; // Map left-to-right position to bit index
+      var bitIndex = _this.size - 1 - pos;
 
       if (value) {
         _this.value |= 1 << bitIndex;
@@ -65,7 +65,7 @@ var Binliner = /*#__PURE__*/function () {
       var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
 
       if (typeof input === "undefined") {
-        input = _this.value; // Default to the internal integer representation
+        input = _this.value;
       }
 
       if (typeof _this.validation === "function") {
@@ -75,17 +75,14 @@ var Binliner = /*#__PURE__*/function () {
       if (Array.isArray(_this.validation)) {
         return _this.validation.some(function (validValue) {
           if (typeof validValue === "number") {
-            // Compare integers directly
             return input === validValue;
-          } // Compare binary strings or other types
-
+          }
 
           return _this.juggle(input, _typeof(validValue)) === validValue;
         });
       }
 
       if (typeof _this.validation === "string" || typeof _this.validation === "number") {
-        // Direct comparison for single validation rule
         return _this.juggle(input, _typeof(_this.validation)) === _this.validation;
       }
 
@@ -108,20 +105,18 @@ var Binliner = /*#__PURE__*/function () {
 
     if ((arguments.length <= 1 ? 0 : arguments.length - 1) > this.size) {
       throw new Error("Too many arguments provided (".concat(arguments.length <= 1 ? 0 : arguments.length - 1, ") for the specified size (").concat(this.size, ")."));
-    } // Initialize value with binary representation of args
+    }
 
-
-    this.value = 0; // Start with 0
+    this.value = 0;
 
     for (var index = 0; index < (arguments.length <= 1 ? 0 : arguments.length - 1); index++) {
       if (index + 1 < 1 || arguments.length <= index + 1 ? undefined : arguments[index + 1]) {
-        this.value |= 1 << this.size - 1 - index; // Map left-to-right index to bit index
+        this.value |= 1 << this.size - 1 - index;
       }
-    } // Validator
-
+    }
 
     if (typeof config.validation === "undefined") {
-      this.validation = "".padStart(this.size, "1"); // default all 1's
+      this.validation = "".padStart(this.size, "1");
     } else {
       this.validation = config.validation;
     }

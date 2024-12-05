@@ -50,6 +50,7 @@ class Binliner {
     if (type === "number") {
       return input;
     }
+
     return input.toString(2).padStart(this.size, "0");
   };
 
@@ -63,6 +64,7 @@ class Binliner {
     } else {
       this.value &= ~(1 << bitIndex);
     }
+
     return this;
   };
 
@@ -83,19 +85,21 @@ class Binliner {
     if (typeof input === "undefined") {
       input = this.value; // Default to the internal integer representation
     }
+
     if (typeof this.validation === "function") {
       return Boolean(this.validation(input));
     }
+
     if (Array.isArray(this.validation)) {
       return this.validation.some((validValue) => {
         if (typeof validValue === "number") {
-          // Compare integers directly
           return input === validValue;
         }
-        // Compare binary strings or other types
+
         return this.juggle(input, typeof validValue) === validValue;
       });
     }
+
     if (
       typeof this.validation === "string" ||
       typeof this.validation === "number"

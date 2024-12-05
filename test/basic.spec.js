@@ -9,8 +9,7 @@ describe("Binliner", () => {
     expect(String(bin)).toEqual('00');
     expect(bin.isValid()).toBeFalsy();
     bin.set(0, 1);
-    expect(String(bin)).toEqual('10');
-    console.log(bin.value);
+    expect(String(bin)).toEqual("10");
     expect(bin.isValid()).toBeTruthy();
     bin.set(1, 1);
     expect(String(bin)).toEqual('11');
