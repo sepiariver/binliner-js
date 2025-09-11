@@ -2,19 +2,32 @@
 
 # @sepiariver/binliner-js
 
-Binary sequence validator for JavaScript
+Binary sequence validator for JavaScript.
 
-Requires @babel/core 7+
+## Breaking Changes in v2.0.0
+
+- Binliner is now an extension of the native `Array` class. This means that all `Array` methods are available on Binliner instances.
+- The `size` property has been removed. The standard `length` property of the Array class is used instead. The length can be set by passing a number as the first argument to the constructor (just like `new Array(number)`).
+- Removed support for passing a config object to the constructor. The constructor now only accepts values representing the binary sequence (they are coerced into Boolean when evaluating). Use `setValidation()` to set validation rules.
+- The `value` property has been removed. Use `String(instance)` or `Number(instance)` to get the string or number representation of the binary sequence.
+- The `juggle()` method no longer takes an input value, only a `type` argument. It operates on the instance's current state.
+- The `isValid()` method no longer takes an input value. It operates on the instance's current state.
+- The `get()` method no longer accepts a second argument to specify the return type. It always returns a Boolean.
 
 ## About
 
 ### What is it?
 
-Binliner is like a factory for [state machines](https://en.wikipedia.org/wiki/Finite-state_machine). Given the parameter `config.size`, an instance is endowed with a finite number of possible states, which may be configured as valid, to the exclusion of all other states, using the `config.validation` parameter.
+Binliner extends the native `Array` class to encapsulate a sequence of binary flags (boolean values) that can be validated against a set of rules. The rules are configured as either an `Array` of strings or numbers, a single string or number, or a function that returns a boolean. The sequence can be manipulated using the inherited `Array` methods, as well as the `set()` and `get()` methods provided by Binliner.
 
-The `isValid()` method returns a boolean: whether the current state is one of those configured as valid, like an [Acceptor](https://en.wikipedia.org/wiki/Finite-state_machine#Acceptors). The instance can be coerced into a `string` or `number` returning the respective representation of the state, like a [Classifier](https://en.wikipedia.org/wiki/Finite-state_machine#Classifiers). This output can be mapped to another set of values that serve a particular business case—the implementation on the whole then acting like a [Moore machine](https://en.wikipedia.org/wiki/Moore_machine).
+The `isValid()` method returns a boolean: whether the current state is one of those configured as valid.
 
-By passing a function to `config.validation`, Binliner's deterministic behaviour can be side-stepped, introducing side-effects or any other custom validation logic required. At that point, Binliner's utility might be brought into question, although it does seem to help elucidate complex conditional logic.
+The instance can be coerced into a `string` or `number` returning the respective representation of the state:
+
+- `string`: a binary string the same length as the instance's length
+- `number`: the base-10 integer value of the binary string
+
+By passing a function to `setValidation()`, Binliner's deterministic behaviour can be side-stepped, introducing side-effects or any other custom validation logic required. At that point, Binliner's utility might be brought into question, although it can help organize or clarify complex decision trees.
 
 ### What it is not
 
@@ -61,17 +74,15 @@ const passedTest = (bob.test.results > 60); // Position 3
  * ALL OTHER STATES ARE INVALID 
  */
 
-const config = {
-    size: 4,
-    validation: ['1010', '1011', '1111']
-}
+const valid = ['1010', '1011', '1111'];
 const binliner = new Binliner(
-    config,
     ofAge,
     needsRetest,
     validLicense,
     passedTest
-);
+); // Instantiate like an Array
+
+binliner.setValidation(valid); // Set valid states
 
 if (!binliner.isValid()) {
     // Reject
@@ -85,8 +96,6 @@ if (Number(binliner) < 12) {
 // The only remaining valid state is '1111'
 return handlePassedRetest(bob);
 ```
-
-See [test/examples.spec.js](test/examples.spec.js) for more.
 
 ## Testing
 

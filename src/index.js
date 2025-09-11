@@ -1,111 +1,66 @@
-class Binliner {
-  constructor(config, ...args) {
-    if (
-      !config ||
-      typeof config !== "object" ||
-      config.constructor !== Object
-    ) {
-      config = {};
-    }
-
-    let size = args.length;
-    if (
-      typeof config.size === "number" &&
-      Number.isInteger(config.size) &&
-      config.size > 0
-    ) {
-      size = config.size;
-    } else if (config.size !== undefined) {
-      throw new Error(`Invalid 'size' in config: must be a positive integer.`);
-    }
-    this.size = size;
-
-    if (args.length > this.size) {
-      throw new Error(
-        `Too many arguments provided (${args.length}) for the specified size (${this.size}).`
-      );
-    }
-
-    // Initialize value with binary representation of args
-    this.value = 0; // Start with 0
-    for (let index = 0; index < args.length; index++) {
-      if (args[index]) {
-        this.value |= 1 << (this.size - 1 - index); // Map left-to-right index to bit index
-      }
-    }
-
-    // Validator
-    if (typeof config.validation === "undefined") {
-      this.validation = "".padStart(this.size, "1"); // Default to all 1's
-    } else if (
-      typeof config.validation !== "function" &&
-      typeof config.validation !== "string" &&
-      typeof config.validation !== "number" &&
-      !Array.isArray(config.validation)
-    ) {
-      throw new Error(
-        `Invalid validation type in config: must be a function, string, number, or array.`
-      );
-    } else {
-      this.validation = config.validation;
-    }
+class Binliner extends Array {
+  constructor(...args) {
+    super(...args);
   }
 
   [Symbol.toPrimitive](hint) {
-    return this.juggle(this.value, hint);
+    return this.juggle(hint);
   }
 
-  juggle = (input, type) => {
-    if (type === "number") {
-      return input;
+  toString() {
+    let str = "";
+    for (let i = 0; i < this.length; i++) {
+      str += !Boolean(this[i]) || this[i] === "0" ? "0" : "1";
     }
+    return str;
+  }
 
-    return input.toString(2).padStart(this.size, "0");
+  toNumber() {
+    return parseInt(this.toString(), 2);
+  }
+
+  juggle = (type) => {
+    if (type === "number") {
+      return this.toNumber();
+    }
+    return this.toString();
   };
 
   set = (pos, value) => {
-    if (pos < 0 || pos >= this.size) {
-      throw new Error(`Illegal position: ${pos}`);
-    }
-    const bitIndex = this.size - 1 - pos; // Map left-to-right position to bit index
-    if (value) {
-      this.value |= 1 << bitIndex;
-    } else {
-      this.value &= ~(1 << bitIndex);
-    }
-
+    this[pos] = Boolean(value);
     return this;
   };
 
-  get = (pos, type = "number") => {
-    if (pos < 0 || pos >= this.size) {
-      throw new Error(`Illegal position: ${pos}`);
-    }
-    const bitIndex = this.size - 1 - pos;
-    const bitValue = (this.value >> bitIndex) & 1;
-
-    if (type === "string") {
-      return bitValue.toString();
-    }
-    return this.juggle(bitValue, type);
+  get = (pos) => {
+    return Boolean(this[pos]);
   };
 
-  isValid = (input = undefined) => {
-    if (typeof input === "undefined") {
-      input = this.value; // Default to the internal integer representation
+  setValidation = (validation) => {
+    if (
+      Array.isArray(validation) &&
+      validation.some((v) => !["string", "number"].includes(typeof v))
+    ) {
+      throw new Error("Array validation must contain only strings or numbers.");
+    } else if (
+      !Array.isArray(validation) &&
+      !["string", "number", "function"].includes(typeof validation)
+    ) {
+      throw new Error(
+        "Invalid validation type in config: must be a function, string, number, or array."
+      );
     }
+    this.validation = validation;
+  };
 
+  isValid = () => {
     if (typeof this.validation === "function") {
-      return Boolean(this.validation(input));
+      return Boolean(this.validation(this));
     }
 
     if (Array.isArray(this.validation)) {
       return this.validation.some((validValue) => {
-        if (typeof validValue === "number") {
-          return input === validValue;
-        }
-
-        return this.juggle(input, typeof validValue) === validValue;
+        const coerced = this.juggle(typeof validValue);
+        return coerced === validValue;
       });
     }
 
@@ -114,7 +69,7 @@ class Binliner {
       typeof this.validation === "number"
     ) {
       // Direct comparison for single validation rule
-      return this.juggle(input, typeof this.validation) === this.validation;
+      return this.juggle(typeof this.validation) === this.validation;
     }
 
     return false;
