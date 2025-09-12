@@ -1,11 +1,24 @@
 {
   "name": "@sepiariver/binliner-js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Binary sequence validator for JavaScript. **Breaking changes in >= 2.0.0**",
-  "main": "index.js",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.js",
+  "browser": "./dist/index.js",
+  "exports": {
+    ".": {
+      "bun": "./src/index.js",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js",
+      "browser": "./dist/index.js"
+    }
+  },
   "scripts": {
-    "test": "npm run build && jest",
-    "build": "babel src -d dist"
+    "build": "bun run build:esm && bun run build:cjs",
+    "build:esm": "bun build src/index.js --outdir ./dist --target browser --format esm",
+    "build:cjs": "bun build src/index.js --outdir ./dist --target node --format cjs --outfile dist/index.cjs.js",
+    "test": "bun test",
+    "preflight": "bun run build && bun run test"
   },
   "repository": {
     "type": "git",
@@ -24,14 +37,5 @@
   "bugs": {
     "url": "https://github.com/sepiariver/binliner-js/issues"
   },
-  "homepage": "https://github.com/sepiariver/binliner-js#readme",
-  "dependencies": {},
-  "devDependencies": {
-    "@babel/cli": "^7.17.6",
-    "@babel/core": "^7.17.8",
-    "@babel/preset-env": "^7.16.11",
-    "babel-jest": "^27.5.1",
-    "fast-deep-equal": "^3.1.3",
-    "jest": "^27.5.1"
-  }
+  "homepage": "https://github.com/sepiariver/binliner-js#readme"
 }

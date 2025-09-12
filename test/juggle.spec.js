@@ -1,3 +1,4 @@
+import { beforeAll, describe, it, expect } from "bun:test";
 import Binliner from "../dist";
 
 describe("juggle method", () => {
@@ -30,5 +31,4 @@ describe("juggle method", () => {
     const result = bin.toString();
     expect(result).toBe("0010"); // Padded to size 4
   });
-
 });
